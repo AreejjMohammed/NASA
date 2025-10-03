@@ -39,10 +39,26 @@
     
     .space-bg {
       background: 
-        radial-gradient(ellipse at top, rgba(10, 14, 23, 0.7) 0%, rgba(0, 0, 0, 0.8) 70%),
+        /* Your background image with fallback */
+        url('36_60f86657.jpg') center/cover no-repeat fixed,
+        /* Fallback gradient if image fails to load */
+        radial-gradient(ellipse at top, rgba(10, 14, 23, 0.9) 0%, rgba(0, 0, 0, 0.95) 70%),
         #050a1c;
       position: relative;
       min-height: 100vh;
+    }
+    
+    /* Ensure content is readable over the background */
+    .space-bg::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(5, 10, 28, 0.7);
+      z-index: 0;
+      pointer-events: none;
     }
     
     .stars {
@@ -120,7 +136,7 @@
     }
     
     .card {
-      background: rgba(16, 22, 36, 0.7);
+      background: rgba(16, 22, 36, 0.8);
       backdrop-filter: blur(15px);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 16px;
@@ -400,7 +416,7 @@
     }
     
     .data-card {
-      background: rgba(16, 22, 36, 0.6);
+      background: rgba(16, 22, 36, 0.7);
       border-radius: 12px;
       padding: 20px;
       border-left: 4px solid var(--nasa-blue);
@@ -505,6 +521,13 @@
       
       .btn-primary {
         padding: 14px 20px;
+      }
+      
+      .space-bg {
+        background: 
+          url('https://storage.googleapis.com/a1aa/image/36_60f86657.jpg') center/cover no-repeat fixed,
+          radial-gradient(ellipse at top, rgba(10, 14, 23, 0.9) 0%, rgba(0, 0, 0, 0.95) 70%),
+          #050a1c;
       }
     }
     
@@ -1633,7 +1656,7 @@
               </div>
 
               <div className="bg-gradient-to-r from-blue-900/30 to-blue-800/20 p-8 rounded-2xl border border-blue-700/30 mb-8">
-                <h3 className="font-semibold text-2xl mb-6 text-white">5-Day Weather Summary</h3>
+                <h3 className="text-2xl font-semibold mb-6 text-white">5-Day Weather Summary</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-base text-center">
                     <thead className="bg-blue-800/50">
