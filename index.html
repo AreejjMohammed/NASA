@@ -24,20 +24,24 @@
       box-sizing: border-box;
     }
     
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    
     body {
       font-family: 'Exo 2', sans-serif;
       color: #ffffff;
-      overflow-x: hidden;
-      margin: 0;
-      padding: 0;
+      overflow-y: auto;
     }
     
     .space-bg {
       background: 
-        url('32d7e53c559108394a36c34ff2d58e76.jpg') center/cover no-repeat fixed,
-        radial-gradient(ellipse at top, rgba(10, 14, 23, 0.7) 0%, rgba(0, 0, 0, 0.8) 70%);
+        radial-gradient(ellipse at top, rgba(10, 14, 23, 0.7) 0%, rgba(0, 0, 0, 0.8) 70%),
+        #050a1c;
       position: relative;
-      overflow: hidden;
       min-height: 100vh;
     }
     
@@ -57,6 +61,7 @@
       background-size: 200px 100px;
       animation: twinkle 8s ease-in-out infinite alternate;
       z-index: 0;
+      pointer-events: none;
     }
     
     @keyframes twinkle {
@@ -75,6 +80,7 @@
         radial-gradient(circle at 80% 70%, rgba(252, 61, 33, 0.05) 0%, transparent 50%),
         radial-gradient(circle at 40% 80%, rgba(26, 107, 196, 0.08) 0%, transparent 50%);
       z-index: 0;
+      pointer-events: none;
     }
     
     .satellite {
@@ -83,6 +89,7 @@
       right: -100px;
       animation: satelliteMove 30s linear infinite;
       z-index: 1;
+      pointer-events: none;
     }
     
     @keyframes satelliteMove {
@@ -104,6 +111,7 @@
       right: -100px;
       animation: planetRotate 120s linear infinite;
       z-index: 0;
+      pointer-events: none;
     }
     
     @keyframes planetRotate {
@@ -323,6 +331,7 @@
                   0 0 30px rgba(255, 255, 255, 1);
       animation: meteorFall 4s linear infinite;
       z-index: 0;
+      pointer-events: none;
     }
     
     @keyframes meteorFall {
@@ -558,6 +567,45 @@
       position: relative;
       z-index: 10;
     }
+    
+    /* Custom dropdown styles */
+    select option {
+      background-color: #0f172a;
+      color: white;
+    }
+    
+    /* Navigation styles */
+    .nav-link {
+      color: rgba(255, 255, 255, 0.7);
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .nav-link:hover {
+      color: white;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .nav-link.active {
+      color: white;
+      background-color: rgba(11, 61, 145, 0.3);
+    }
+    
+    /* Team member styles */
+    .team-member {
+      transition: all 0.3s ease;
+    }
+    
+    .team-member:hover {
+      transform: translateY(-5px);
+    }
+    
+    .team-leader {
+      border: 2px solid var(--nasa-red);
+      box-shadow: 0 0 15px rgba(252, 61, 33, 0.3);
+    }
   </style>
 </head>
 <body class="space-bg min-h-screen">
@@ -581,6 +629,7 @@
 
     function App() {
       const [step, setStep] = useState(1);
+      const [currentPage, setCurrentPage] = useState('home');
       const [countries, setCountries] = useState([]);
       const [cities, setCities] = useState([]);
       const [formData, setFormData] = useState({
@@ -599,6 +648,16 @@
       const [progress, setProgress] = useState(0);
       const [isInitialLoad, setIsInitialLoad] = useState(true);
       
+      // Team data
+      const teamMembers = [
+        { name: 'Mohaned Nasser', role: 'Team Leader', isLeader: true },
+        { name: 'Areej Mohammed', role: 'Data Scientist', isLeader: false },
+        { name: 'Shaza Mohammed', role: 'Frontend Developer', isLeader: false },
+        { name: 'Rahma Ashraf', role: 'UI/UX Designer', isLeader: false },
+        { name: 'Ahmed Gamal', role: 'Backend Developer', isLeader: false },
+        { name: 'Abdelrahman Ahmed', role: 'Meteorology Specialist', isLeader: false }
+      ];
+      
       // Use refs to prevent unnecessary re-renders
       const worldData = useRef({
         countries: [
@@ -615,11 +674,42 @@
           'Australia': ['Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Adelaide', 'Canberra', 'Hobart'],
           'Germany': ['Berlin', 'Munich', 'Hamburg', 'Frankfurt', 'Cologne', 'Stuttgart', 'Düsseldorf'],
           'France': ['Paris', 'Marseille', 'Lyon', 'Toulouse', 'Nice', 'Nantes', 'Strasbourg'],
+          'Italy': ['Rome', 'Milan', 'Naples', 'Turin', 'Palermo', 'Genoa', 'Bologna'],
+          'Spain': ['Madrid', 'Barcelona', 'Valencia', 'Seville', 'Zaragoza', 'Malaga', 'Murcia'],
           'Japan': ['Tokyo', 'Osaka', 'Kyoto', 'Yokohama', 'Nagoya', 'Sapporo', 'Kobe'],
           'China': ['Beijing', 'Shanghai', 'Guangzhou', 'Shenzhen', 'Chengdu', 'Wuhan', 'Xi\'an'],
           'India': ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata', 'Pune'],
           'Brazil': ['São Paulo', 'Rio de Janeiro', 'Brasília', 'Salvador', 'Fortaleza', 'Belo Horizonte', 'Manaus'],
-          'Mexico': ['Mexico City', 'Guadalajara', 'Monterrey', 'Puebla', 'Tijuana', 'León', 'Zapopan']
+          'Mexico': ['Mexico City', 'Guadalajara', 'Monterrey', 'Puebla', 'Tijuana', 'León', 'Zapopan'],
+          'South Africa': ['Johannesburg', 'Cape Town', 'Durban', 'Pretoria', 'Port Elizabeth', 'Bloemfontein'],
+          'Russia': ['Moscow', 'Saint Petersburg', 'Novosibirsk', 'Yekaterinburg', 'Kazan', 'Nizhny Novgorod'],
+          'Turkey': ['Istanbul', 'Ankara', 'Izmir', 'Bursa', 'Adana', 'Antalya', 'Konya'],
+          'South Korea': ['Seoul', 'Busan', 'Incheon', 'Daegu', 'Daejeon', 'Gwangju', 'Ulsan'],
+          'Netherlands': ['Amsterdam', 'Rotterdam', 'The Hague', 'Utrecht', 'Eindhoven', 'Tilburg', 'Groningen'],
+          'Sweden': ['Stockholm', 'Gothenburg', 'Malmö', 'Uppsala', 'Västerås', 'Örebro', 'Linköping'],
+          'Norway': ['Oslo', 'Bergen', 'Trondheim', 'Stavanger', 'Drammen', 'Fredrikstad', 'Kristiansand'],
+          'Switzerland': ['Zurich', 'Geneva', 'Basel', 'Lausanne', 'Bern', 'Winterthur', 'Lucerne'],
+          'Austria': ['Vienna', 'Graz', 'Linz', 'Salzburg', 'Innsbruck', 'Klagenfurt', 'Villach'],
+          'Belgium': ['Brussels', 'Antwerp', 'Ghent', 'Charleroi', 'Liège', 'Bruges', 'Namur'],
+          'Denmark': ['Copenhagen', 'Aarhus', 'Odense', 'Aalborg', 'Esbjerg', 'Randers', 'Kolding'],
+          'Finland': ['Helsinki', 'Espoo', 'Tampere', 'Vantaa', 'Oulu', 'Turku', 'Jyväskylä'],
+          'Greece': ['Athens', 'Thessaloniki', 'Patras', 'Heraklion', 'Larissa', 'Volos', 'Rhodes'],
+          'Portugal': ['Lisbon', 'Porto', 'Vila Nova de Gaia', 'Amadora', 'Braga', 'Setúbal', 'Coimbra'],
+          'Ireland': ['Dublin', 'Cork', 'Limerick', 'Galway', 'Waterford', 'Drogheda', 'Dundalk'],
+          'New Zealand': ['Auckland', 'Wellington', 'Christchurch', 'Hamilton', 'Tauranga', 'Napier', 'Dunedin'],
+          'Singapore': ['Singapore'],
+          'Malaysia': ['Kuala Lumpur', 'George Town', 'Ipoh', 'Shah Alam', 'Petaling Jaya', 'Kuching', 'Kota Kinabalu'],
+          'Thailand': ['Bangkok', 'Nonthaburi', 'Nakhon Ratchasima', 'Chiang Mai', 'Hat Yai', 'Udon Thani', 'Pak Kret'],
+          'Vietnam': ['Ho Chi Minh City', 'Hanoi', 'Haiphong', 'Can Tho', 'Da Nang', 'Biên Hòa', 'Nha Trang'],
+          'Argentina': ['Buenos Aires', 'Córdoba', 'Rosario', 'Mendoza', 'San Miguel de Tucumán', 'La Plata', 'Mar del Plata'],
+          'Chile': ['Santiago', 'Puente Alto', 'Maipú', 'La Florida', 'Antofagasta', 'Viña del Mar', 'Valparaíso'],
+          'Colombia': ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena', 'Cúcuta', 'Soledad'],
+          'Peru': ['Lima', 'Arequipa', 'Trujillo', 'Chiclayo', 'Huancayo', 'Iquitos', 'Piura'],
+          'Nigeria': ['Lagos', 'Kano', 'Ibadan', 'Kaduna', 'Port Harcourt', 'Benin City', 'Maiduguri'],
+          'Kenya': ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret', 'Malindi', 'Thika'],
+          'Morocco': ['Casablanca', 'Fez', 'Tangier', 'Marrakesh', 'Salé', 'Meknes', 'Rabat'],
+          'Tunisia': ['Tunis', 'Sfax', 'Sousse', 'Ettadhamen', 'Kairouan', 'Gabès', 'Bizerte'],
+          'Algeria': ['Algiers', 'Oran', 'Constantine', 'Annaba', 'Blida', 'Batna', 'Djelfa']
         },
         weather: {
           'New York': { temp: 22, humidity: 60, condition: 'Sunny', rainChance: 15, windSpeed: 12, pressure: 1013 },
@@ -969,6 +1059,23 @@
             </div>
             
             <div className="flex items-center space-x-4">
+              <div className="flex space-x-2">
+                <div 
+                  className={`nav-link ${currentPage === 'home' ? 'active' : ''}`}
+                  onClick={() => setCurrentPage('home')}
+                >
+                  <i className="fas fa-home mr-2"></i>
+                  Home
+                </div>
+                <div 
+                  className={`nav-link ${currentPage === 'about' ? 'active' : ''}`}
+                  onClick={() => setCurrentPage('about')}
+                >
+                  <i className="fas fa-info-circle mr-2"></i>
+                  About Us
+                </div>
+              </div>
+              
               <div className="text-white text-sm hidden md:block">
                 <div className="flex items-center space-x-2">
                   <i className="fas fa-clock text-blue-400"></i>
@@ -1048,6 +1155,123 @@
           </div>
         );
       };
+
+      const AboutPage = () => (
+        <div className="container mx-auto px-4 py-8 fade-in">
+          <div className="max-w-6xl mx-auto">
+            <div className="card p-8 rounded-2xl slide-up mb-8">
+              <div className="text-center mb-10">
+                <h1 className="text-4xl font-bold text-white mb-4">
+                  <i className="fas fa-info-circle mr-3 text-blue-500"></i>
+                  About NASA Weather Intelligence
+                </h1>
+                <p className="text-gray-300 text-lg">Revolutionizing weather forecasting through advanced satellite technology and AI</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                <div className="data-card">
+                  <i className="fas fa-satellite text-blue-400 text-3xl mb-4"></i>
+                  <h3 className="text-xl font-bold text-white mb-3">Our Mission</h3>
+                  <p className="text-gray-300">
+                    To provide the most accurate, timely, and actionable weather intelligence using NASA's cutting-edge satellite technology, 
+                    advanced atmospheric modeling, and machine learning algorithms.
+                  </p>
+                </div>
+                
+                <div className="data-card">
+                  <i className="fas fa-globe-americas text-green-400 text-3xl mb-4"></i>
+                  <h3 className="text-xl font-bold text-white mb-3">Global Coverage</h3>
+                  <p className="text-gray-300">
+                    Our system leverages data from 20+ Earth observation satellites to provide comprehensive weather monitoring 
+                    and forecasting for every corner of the planet.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mb-10">
+                <h3 className="text-2xl font-semibold mb-6 text-white">Our Technology</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-gradient-to-br from-blue-800 to-purple-900 p-6 rounded-2xl">
+                    <i className="fas fa-satellite-dish text-4xl mb-4 text-blue-300"></i>
+                    <h4 className="text-lg font-bold text-white mb-2">Satellite Network</h4>
+                    <p className="text-gray-300 text-sm">
+                      Advanced Earth observation satellites providing real-time atmospheric data with unprecedented resolution.
+                    </p>
+                  </div>
+                  
+                  <div className="bg-gradient-to-br from-green-800 to-blue-900 p-6 rounded-2xl">
+                    <i className="fas fa-brain text-4xl mb-4 text-green-300"></i>
+                    <h4 className="text-lg font-bold text-white mb-2">AI Analysis</h4>
+                    <p className="text-gray-300 text-sm">
+                      Machine learning algorithms that process petabytes of data to identify patterns and improve forecast accuracy.
+                    </p>
+                  </div>
+                  
+                  <div className="bg-gradient-to-br from-purple-800 to-pink-900 p-6 rounded-2xl">
+                    <i className="fas fa-chart-line text-4xl mb-4 text-purple-300"></i>
+                    <h4 className="text-lg font-bold text-white mb-2">Climate Modeling</h4>
+                    <p className="text-gray-300 text-sm">
+                      Sophisticated climate models that simulate atmospheric conditions with 94.7% accuracy.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-blue-900/30 to-blue-800/20 p-8 rounded-2xl border border-blue-700/30 mb-8">
+                <h3 className="text-2xl font-semibold mb-6 text-white">Our Team</h3>
+                <p className="text-gray-300 mb-6">
+                  NASA Weather Intelligence is developed by <span className="font-bold text-blue-400">iNFINITY MISSION</span>, 
+                  a multidisciplinary team of meteorologists, data scientists, satellite engineers, and climate researchers 
+                  dedicated to advancing our understanding of Earth's weather systems.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {teamMembers.map((member, index) => (
+                    <div 
+                      key={index} 
+                      className={`team-member card p-6 rounded-2xl text-center ${member.isLeader ? 'team-leader' : ''}`}
+                    >
+                      <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-600 to-purple-700 rounded-full flex items-center justify-center">
+                        <i className="fas fa-user-astronaut text-white text-2xl"></i>
+                      </div>
+                      <h4 className="font-bold text-white text-lg">{member.name}</h4>
+                      <p className="text-gray-400">{member.role}</p>
+                      {member.isLeader && (
+                        <div className="mt-2">
+                          <span className="inline-block bg-red-600 text-white text-xs px-2 py-1 rounded-full">
+                            Team Leader
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-purple-900/30 to-purple-800/20 p-8 rounded-2xl border border-purple-700/30">
+                <h3 className="text-2xl font-semibold mb-6 text-white">Our Vision</h3>
+                <p className="text-gray-300 mb-4">
+                  We envision a world where accurate weather forecasting enables better decision-making for agriculture, 
+                  transportation, disaster management, and everyday life. Through continuous innovation and collaboration 
+                  with NASA's scientific community, we're pushing the boundaries of what's possible in meteorological science.
+                </p>
+                <div className="flex items-center justify-center mt-6">
+                  <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-3 px-6 rounded-full font-bold text-lg">
+                    iNFINITY MISSION
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <button
+              className="w-full bg-gray-700 hover:bg-gray-600 text-white py-4 rounded-lg font-medium transition-all duration-300 flex items-center justify-center text-lg"
+              onClick={() => setCurrentPage('home')}
+            >
+              <i className="fas fa-arrow-left mr-3"></i>
+              Back to Home
+            </button>
+          </div>
+        </div>
+      );
 
       const renderStep1 = () => (
         <div className="container mx-auto px-4 py-8 fade-in">
@@ -1504,9 +1728,14 @@
         <div className="min-h-screen space-bg flex flex-col relative">
           <Header />
           <main className="flex-1 py-4 relative z-10">
-            {step === 1 && renderStep1()}
-            {step === 2 && weatherData && renderStep2()}
-            {step === 3 && advice && renderStep3()}
+            {currentPage === 'home' && (
+              <>
+                {step === 1 && renderStep1()}
+                {step === 2 && weatherData && renderStep2()}
+                {step === 3 && advice && renderStep3()}
+              </>
+            )}
+            {currentPage === 'about' && <AboutPage />}
           </main>
           <footer className="footer-gradient text-white py-6 text-center relative z-10 mt-12">
             <div className="container mx-auto">
